@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX_SIZE 30 // Максимальное количество строк и столбцов
+
+// Функция для вычисления суммы элементов в четных столбцах
+int sumofevencolumns(int* row, int M) {
+    int sum = 0;
+    for (int j = 0; j < M; j += 2) { // Четные столбцы
+        sum += row[j];
+    }
+    return sum;
+}
+
+// Сортировка строк методом Шелла
+void shellsort(int** matrix, int N, int M) {
+    for (int gap = N / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < N; i++) {
+            int* temprow = matrix[i];
+            int tempsum = sumofevencolumns(temprow, M);
+            int j;
+            for (j = i; j >= gap; j -= gap) {
+                int prevsum = sumofevencolumns(matrix[j - gap], M);
+                if (prevsum < tempsum) {
+                    matrix[j] = matrix[j - gap];
+                }
+                else {
+                    break;
+                }
+            }
+            matrix[j] = temprow;
+        }
+    }
+}
+
+// Вывод матрицы
+void printmatrix(int** matrix, int N, int M) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Проверка ввода значений
+void inputvalueelement(int* value) {
+    while (1) {
+        if (scanf_s("%d", value) == 1) {
+            break;
+        }
+        else {
+            printf("Error, please enter a valid integer!\n");
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+}
+
+int main() {
+    int N, M;
+
+    // Ввод количества строк
+    while (1) {
+        printf("Enter the number of rows (max %d): ", MAX_SIZE);
+        if (scanf_s("%d", &N) == 1 && N > 0 && N <= MAX_SIZE) {
+            break;
+        }
+        else {
+            printf("Error, please enter a positive integer between 1 and %d!\n", MAX_SIZE);
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+
+    // Ввод количества столбцов
+    while (1) {
+        printf("Enter the number of cols (max %d): ", MAX_SIZE);
+        if (scanf_s("%d", &M) == 1 && M > 0 && M <= MAX_SIZE) {
+            break;
+        }
+        else {
+            printf("Error, please enter a positive integer between 1 and %d!\n", MAX_SIZE);
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+
+    // Создание матрицы
+    int** matrix = (int**)malloc(N * sizeof(int*));
+    for (int i = 0; i < N; i++) {
+        matrix[i] = (int*)malloc(M * sizeof(int));
+    }
+
+    // Выбор способа заполнения матрицы
+    char choice;
+    printf("To fill the matrix with random numbers (0 to 99), press r/R. Any other key for manual input: ");
+    while (getchar() != '\n'); // очистка буфера ввода
+    scanf_s("%c", &choice, 1);
+
+    if (choice == 'r' || choice == 'R') {
+        srand(time(NULL));
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                matrix[i][j] = rand() % 100; // Заполнение случайными числами от 0 до 99
+            }
+        }
+        printf("Matrix initialized with random numbers!\n");
+    }
+    else {
+        printf("Enter matrix elements:\n");
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                printf("Element [%d][%d]: ", i, j);
+                inputvalueelement(&matrix[i][j]);
+            }
+        }
+    }
+
+    // Вывод исходной матрицы
+    printf("\nOriginal matrix:\n");
+    printmatrix(matrix, N, M);
+
+    // Сортировка строк матрицы методом Шелла
+    shellsort(matrix, N, M);
+
+    // Вывод отсортированной матрицы
+    printf("\nSorted matrix:\n");
+    printmatrix(matrix, N, M);
+
+    // Освобождение памяти
+    for (int i = 0; i < N; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+
+    return 0;
+}
