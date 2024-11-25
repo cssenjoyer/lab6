@@ -1,0 +1,88 @@
+/*1. В одномерном массиве выполнить сортировку отрицательных
+элементов методом выбора*/
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SIZE 30 // Максимальное количество элементов в массиве
+
+// Функция для сортировки методом выбора
+void selectionsort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int minIndex = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        // Меняем местами arr[i] и arr[minIndex]
+        int temp = arr[minIndex];
+        arr[minIndex] = arr[i];
+        arr[i] = temp;
+    }
+}
+
+// Функция для вывода массива
+void printarray(int arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+// Функция для проверки ввода элемента
+void inputvalueelement(int* value) {
+    while (1) {
+        if (scanf_s("%d", value) == 1) {
+            break;
+        }
+        else {
+            printf("Error, please enter a valid integer!\n");
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+}
+
+int main() {
+    int n;
+
+    // Ввод размера массива
+    while (1) {
+        printf("Enter number of elements (max %d): ", MAX_SIZE);
+        if (scanf_s("%d", &n) == 1 && n > 0 && n <= MAX_SIZE) {
+            break;
+        }
+        else {
+            printf("Error, please enter a positive integer between 1 and %d!\n", MAX_SIZE);
+            while (getchar() != '\n'); // очистка буфера ввода
+        }
+    }
+
+    // Создание массива
+    int* arr = (int*)malloc(n * sizeof(int));
+    if (arr == NULL) {
+        printf("Memory allocation failed\n");
+        return 1;
+    }
+
+    // Ввод элементов массива с проверкой
+    printf("Enter elements: \n");
+    for (int i = 0; i < n; i++) {
+        printf("Element [%d]: ", i + 1);
+        inputvalueelement(&arr[i]);
+    }
+
+    // Вывод исходного массива
+    printf("Your array: ");
+    printarray(arr, n);
+
+    // Сортировка массива
+    selectionsort(arr, n);
+
+    // Вывод отсортированного массива
+    printf("Sorted array: ");
+    printarray(arr, n);
+
+    // Освобождение памяти
+    free(arr);
+    return 0;
+}
